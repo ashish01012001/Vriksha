@@ -1,24 +1,95 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { lazy, Suspense, useState} from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Loader from "./components/loader/loader";
 
+import { plantDetailLoader } from "./pages/PlantDetail";
+import { plantsLoader } from "./pages/MyPlants";
+import { profileLoader } from "./pages/MyProfile";
+import { plantHealthLoader } from "./pages/PlantHealth";
+import { homeLoader } from "./pages/Home";
+import UserInfo from "./store/user-info";
+const RootLayout = lazy(() => import("./pages/RootLayout"));
+const Home = lazy(() => import("./pages/Home"));
+const MyPlants = lazy(() => import("./pages/MyPlants"));
+const PlantDetail = lazy(() => import("./pages/PlantDetail"));
+const NewID = lazy(() => import("./pages/NewID"));
+const LogIn = lazy(() => import("./pages/LogIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Error = lazy(() => import("./pages/Error"));
+const MyProfile = lazy(() => import("./pages/MyProfile"));
+const PlantHealth = lazy(() => import("./pages/PlantHealth"));
 function App() {
+  
+  const [profileImg, setProfileImg] = useState("https://cdn-icons-png.flaticon.com/512/3682/3682281.png");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const handleImg = (url) => {
+    setProfileImg(url);
+  };
+  const handleLog = (value) => {
+    setIsLoggedIn(value);
+  };
+  
+  const userInfo = {
+    isLoggedIn: isLoggedIn,
+    profileImg: profileImg,
+    changeImg: handleImg,
+    changeLog: handleLog,
+  };
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <Error />,
+      children: [
+        {
+          index: "true",
+          element: <Home />,
+          loader: homeLoader,
+        },
+        {
+          path: "newID",
+          element: <NewID />,
+        },
+        {
+          path: "login",
+          element: <LogIn />,
+        },
+        {
+          path: "signup",
+          element: <SignUp />,
+        },
+        {
+          path: "myprofile",
+          element: <MyProfile />,
+          loader: profileLoader,
+        },
+        {
+          path: "myplants",
+          element: <MyPlants />,
+          loader: plantsLoader,
+        },
+        {
+          path: "myplants/health/:accessToken",
+          element: <PlantHealth />,
+          loader: plantHealthLoader,
+        },
+        {
+          path: "myplants/:accessToken",
+          element: <PlantDetail />,
+          loader: plantDetailLoader,
+        },
+      ],
+    },
+  ]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <UserInfo.Provider value={userInfo}>
+        <Suspense fallback={<Loader />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </UserInfo.Provider>
+    </>
   );
 }
 
