@@ -4,7 +4,7 @@
 Vriksha is a web application designed to simplify plant identification and disease diagnosis using machine learning. It helps users explore the world of plants effortlessly.
 
 # Link
--**[Vriksha- Your Intelligent Plant Care Assistant](https://vriksha-0101.firebaseapp.com/)**
+-**[Vriksha- Your Intelligent Plant Care Assistant](https://vriksha-kappa.vercel.app/)**
 
 ## Features
 
