@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useState} from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Loader from "./components/loader/loader";
-
+import { imgPageLoader } from "./pages/NewID";
 import { plantDetailLoader } from "./pages/PlantDetail";
 import { plantsLoader } from "./pages/MyPlants";
 import { profileLoader } from "./pages/MyProfile";
@@ -50,6 +50,7 @@ function App() {
         {
           path: "newID",
           element: <NewID />,
+          loader:imgPageLoader
         },
         {
           path: "login",

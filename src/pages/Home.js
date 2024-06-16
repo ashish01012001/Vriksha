@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "primereact/button";
-import { json, redirect, useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 const Home = () => {
   const navigate = useNavigate();
-  
+  const [loadingP, setLoadingP] = useState(false);
 
   return (
     <>
@@ -34,19 +34,31 @@ const Home = () => {
               </li>
             </ul>
 
-            <Button
-              label="My Plants"
-              type="button"
-              className="mr-3 p-button-raised"
-              onClick={() => navigate("/myplants")}
-            />
+            {localStorage.getItem("isLoggedIn") && (
+              <Button
+                label="My Plants"
+                type="button"
+                className="mr-3 p-button-raised"
+                loading={loadingP}
+                disabled={loadingP}
+                onClick={() => {
+                  setLoadingP(true);
+                  navigate("/myplants");
+                  setTimeout(() => {
+                    setLoadingP(false);
+                  }, 5000);
+                }}
+              />
+            )}
 
-            <Button
-              label="New Identification"
-              type="button"
-              className="p-button-outlined"
-              onClick={() => navigate("/newID")}
-            />
+            {localStorage.getItem("isLoggedIn") && (
+              <Button
+                label="New Identification"
+                type="button"
+                className="p-button-outlined"
+                onClick={() => navigate("/newID")}
+              />
+            )}
           </section>
         </div>
       </div>
@@ -55,8 +67,8 @@ const Home = () => {
 };
 export default Home;
 
-export async function homeLoader({req,params}){
-  if (!localStorage.getItem("isLoggedIn")) return redirect("/login");
-  
-  return json({status:200});
+export async function homeLoader({ req, params }) {
+  //if (!localStorage.getItem("isLoggedIn")) return redirect("/login");
+
+  return json({ status: 200 });
 }

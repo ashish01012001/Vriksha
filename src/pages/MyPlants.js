@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -8,17 +8,20 @@ import axios from "axios";
 
 const MyPlants = () => {
   const navigate = useNavigate();
+  const [detailP, setDetail] = useState({ loading: false, index: 0 });
+  const [healthP, setHealth] = useState({ loading: false, index: 0 });
 
-  const plants = useLoaderData();
+  const plantsData = useLoaderData();
+  
 
   const plantNameTemplate = (plant) => {
-    return <b>{plant.name}</b>;
+    return <b>{plant.data.name}</b>;
   };
   const imageBodyTemplate = (plant) => {
     return (
       <img
-        src={plant.cldRes}
-        alt={plant.name}
+        src={plant.data.cldRes}
+        alt={plant.data.name}
         className="w-6rem shadow-2 border-round"
       />
     );
@@ -28,8 +31,20 @@ const MyPlants = () => {
     return (
       <Button
         label="Detail"
+        loading={detailP.index === plant.index ? detailP.loading : false}
+        disabled={detailP.index === plant.index ? detailP.loading : false}
         onClick={() => {
-          navigate(`/myplants/${plant.accessToken}`);
+          setDetail({
+            loading: true,
+            index: plant.index,
+          });
+          navigate(`/myplants/${plant.data.accessToken}`);
+          setTimeout(() => {
+            setDetail({
+              loading: false,
+              index: 0,
+            });
+          }, 5000);
         }}
       />
     );
@@ -39,8 +54,20 @@ const MyPlants = () => {
     return (
       <Button
         label="Health"
+        loading={healthP.index === plant.index ? healthP.loading : false}
+        disabled={healthP.index === plant.index ? healthP.loading : false}
         onClick={() => {
-          navigate(`/myplants/health/${plant.accessToken}`);
+          setHealth({
+            loading: true,
+            index: plant.index,
+          });
+          navigate(`/myplants/health/${plant.data.accessToken}`);
+          setTimeout(() => {
+            setHealth({
+              loading: false,
+              index: 0,
+            });
+          }, 5000);
         }}
       />
     );
@@ -52,13 +79,13 @@ const MyPlants = () => {
     </div>
   );
   const footer = `In total there are ${
-    plants.data === null ? 0 : plants.data.length
+    plantsData === null ? 0 : plantsData.length
   } identification.`;
 
   return (
     <div className="card">
       <DataTable
-        value={plants.data}
+        value={plantsData}
         header={header}
         footer={footer}
         tableStyle={{ minWidth: "60rem" }}
@@ -77,14 +104,23 @@ export default MyPlants;
 export async function plantsLoader({ request, params }) {
   if (localStorage.getItem("isLoggedIn") === null) return redirect("/login");
   const response = await axios.get(
-    `https://vriksha-server.onrender.com/plant/getInfo`,
+    `https://vriksha-server-n9vt.vercel.app/plant/getInfo`,
     {
       headers: {
-        Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }
   );
 
-  if (response.status === 200) return json(response.data, { status: 200 });
+  const plantsData = [];
+  for (let i = 0; i < response.data.data.length; i++) {
+    let plantData = {
+      data: response.data.data[i],
+      index: i,
+    };
+    plantsData.push(plantData);
+  }
+
+  if (response.status === 200) return json(plantsData, { status: 200 });
   else throw json(response.message, { status: response.status });
 }

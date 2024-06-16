@@ -15,6 +15,7 @@ const SignUpForm = () => {
   const navigate = useNavigate();
   const [showMessage, setShowMessage] = useState(false);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const validate = (data) => {
     let errors = {};
@@ -50,17 +51,22 @@ const SignUpForm = () => {
   };
 
   const onSubmit = async (data, form) => {
-    const response = await fetch("https://vriksha-server.onrender.com/auth/signup", {
-      method: "post",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    setLoading(true);
+    const response = await fetch(
+      "https://vriksha-server-n9vt.vercel.app/auth/signup",
+      {
+        method: "post",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const result = await response.json();
+    setLoading(false);
     if (result.status === 422) showError(result.message);
     if (result.status === 403) showError(result.message);
-    if(result.status===200){
+    if (result.status === 200) {
       setFormData(data);
       setShowMessage(true);
     }
@@ -211,7 +217,13 @@ const SignUpForm = () => {
                   )}
                 />
 
-                <Button type="submit" label="Submit" className="mt-2" />
+                <Button
+                  type="submit"
+                  label="Submit"
+                  className="mt-2"
+                  loading={loading}
+                  disabled={loading}
+                />
               </form>
             )}
           />

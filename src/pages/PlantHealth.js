@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Image } from "primereact/image";
-import { Chip } from "primereact/chip";
+
 
 import { useLoaderData, redirect, json } from "react-router-dom";
 import axios from "axios";
@@ -104,10 +104,10 @@ export async function plantHealthLoader({ request, params }) {
   const accessToken = params.accessToken;
 
   const response = await axios.get(
-    `https://vriksha-server.onrender.com/plant/healthInfo/${accessToken}`,
+    `https://vriksha-server-n9vt.vercel.app/plant/healthInfo/${accessToken}`,
     {
       headers: {
-        Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }
   );

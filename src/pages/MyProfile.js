@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import UserInfo from "../store/user-info";
 import { FileUpload } from "primereact/fileupload";
@@ -8,13 +8,13 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "./ProfilePage.css";
 import { json, redirect, useLoaderData, useNavigate } from "react-router-dom";
-import { Toast } from "primereact/toast";
+
 
 const MyProfile = () => {
   const userCtx = useContext(UserInfo);
   const userData = useLoaderData();
   const navigate = useNavigate();
-  const toast = useRef(null);
+
   const [isLoading, setIsLoading] = useState(false);
   console.log(userCtx.profileImg);
 
@@ -24,18 +24,18 @@ const MyProfile = () => {
     const formData = new FormData();
     formData.append("my_file", file);
     const response = await fetch(
-      "https://vriksha-server.onrender.com/user/upload",
+      "https://vriksha-server-n9vt.vercel.app/user/upload",
       {
         method: "post",
         body: formData,
         headers: {
-          Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
     const result = await response.json();
-    console.log(result);
-    console.log(result.imageResource);
+    // console.log(result);
+    // console.log(result.imageResource);
     if (result.status) {
       navigate("/");
       userCtx.changeImg(result.imageResource);
@@ -52,7 +52,7 @@ const MyProfile = () => {
           <ProgressSpinner />
         </div>
       )}
-      
+
       <div className="profile-container">
         <div className="profile-card">
           <img
@@ -73,7 +73,9 @@ const MyProfile = () => {
               maxFileSize={2000000}
               customUpload
               uploadHandler={onUpload}
-              auto chooseLabel="Browse"
+              auto
+              chooseLabel="Browse"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -87,10 +89,10 @@ export default MyProfile;
 export async function profileLoader({ request, params }) {
   if (localStorage.getItem("isLoggedIn") === null) return redirect("/login");
   const response = await axios.get(
-    `https://vriksha-server.onrender.com/user/getData`,
+    `https://vriksha-server-n9vt.vercel.app/user/getData`,
     {
       headers: {
-        Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }
   );

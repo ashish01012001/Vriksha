@@ -86,10 +86,10 @@ export async function plantDetailLoader({ request, params }) {
   if (localStorage.getItem("isLoggedIn") === null) return redirect("/login");
   const accessToken = params.accessToken;
   const response = await axios.get(
-    `https://vriksha-server.onrender.com/plant/plantdetail/${accessToken}`,
+    `https://vriksha-server-n9vt.vercel.app/plant/plantdetail/${accessToken}`,
     {
       headers: {
-        Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }
   );

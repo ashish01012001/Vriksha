@@ -1,6 +1,6 @@
-import React, { useRef, useState,useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
-import { useNavigate } from "react-router-dom";
+import { json, redirect, useNavigate } from "react-router-dom";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
 import { Tooltip } from "primereact/tooltip";
@@ -8,12 +8,10 @@ import { Tag } from "primereact/tag";
 import { ProgressSpinner } from "primereact/progressspinner";
 const NewID = () => {
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!localStorage.getItem("isLoggedIn")) return navigate("/login");
-  }, []);
+
   const [totalSize, setTotalSize] = useState(0);
   const toast = useRef(null);
-  
+
   const fileUploadRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,10 +62,7 @@ const NewID = () => {
             src={file.objectURL}
             width={100}
           />
-          <span className="flex flex-column text-left ml-3">
-            {file.name}
-            <small>{new Date().toLocaleDateString()}</small>
-          </span>
+          
         </div>
         <Tag
           value={props.formatSize}
@@ -122,12 +117,12 @@ const NewID = () => {
     const formData = new FormData();
     formData.append("my_file", file);
     const response = await fetch(
-      "https://vriksha-server.onrender.com/plant/createIdentification",
+      "https://vriksha-server-n9vt.vercel.app/plant/createIdentification",
       {
         method: "post",
         body: formData,
         headers: {
-          Authorization: "Bearer " + `${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
@@ -199,9 +194,15 @@ const NewID = () => {
           chooseOptions={chooseOptions}
           uploadOptions={uploadOptions}
           cancelOptions={cancelOptions}
+          disabled={isLoading}
         />
       </div>
     </div>
   );
 };
 export default NewID;
+
+export async function imgPageLoader({ request, params }) {
+  if (localStorage.getItem("isLoggedIn") === null) return redirect("/login");
+  return json({ status: 200 });
+}

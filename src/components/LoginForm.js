@@ -13,9 +13,10 @@ import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const toast = useRef(null);
-  const userCtx=useContext(UserInfo);
+  const userCtx = useContext(UserInfo);
   const [showMessage, setShowMessage] = useState(false);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const validate = (data) => {
@@ -48,14 +49,19 @@ const LoginForm = () => {
   };
 
   const onSubmit = async (data, form) => {
-    const response = await fetch("https://vriksha-server.onrender.com/auth/login", {
-      method: "post",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    setLoading(true);
+    const response = await fetch(
+      "https://vriksha-server-n9vt.vercel.app/auth/login",
+      {
+        method: "post",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const result = await response.json();
+    setLoading(false);
     if (result.status === 422) showError(result.message);
     if (result.status === 403) showError(result.message);
     if (result.status === 401) showError(result.message);
@@ -63,14 +69,12 @@ const LoginForm = () => {
     if (result.status === 200) {
       userCtx.changeLog(true);
 
-      userCtx.changeImg(result.imageUrl)
+      userCtx.changeImg(result.imageUrl);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("token", result.token);
-      localStorage.setItem("imageUrl",result.imageUrl)
+      localStorage.setItem("imageUrl", result.imageUrl);
       setFormData(data);
       setShowMessage(true);
-      
-      
     }
   };
 
@@ -120,7 +124,9 @@ const LoginForm = () => {
             style={{ fontSize: "5rem", color: "var(--green-500)" }}
           ></i>
           <h5>Login Successful!</h5>
-          <p style={{ lineHeight: 1.5, textIndent: "1rem" }}>Welcome Back</p>
+          <p style={{ lineHeight: 1.5, textIndent: "1rem" }}>
+            Welcome Back 
+          </p>
         </div>
       </Dialog>
 
@@ -190,7 +196,13 @@ const LoginForm = () => {
                   )}
                 />
 
-                <Button type="submit" label="Submit" className="mt-2" />
+                <Button
+                  type="submit"
+                  label="Submit"
+                  className="mt-2"
+                  loading={loading}
+                  disabled={loading}
+                />
               </form>
             )}
           />
